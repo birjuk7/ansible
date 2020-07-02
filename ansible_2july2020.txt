@@ -1,0 +1,197 @@
+ansible
+
+https://www.redhat.com/en/blog/system-administrators-guide-getting-started-ansible-fast?extIdCarryOver=true&sc_cid=701f2000001OH7YAAW
+
+setup steps
+1 setup EC2 instance
+2 setup hostname
+3 create ansadmin user
+4 add user to sudoers file
+5 enable password based login
+ 
+
+
+ssh-keygen
+cd ~/.ssh
+copy ~/.ssh/id_rsa.pub of ansible-master-node to the host authorized key of known hosts
+hence you are going to access passwordless login access
+
+$visudo         ## for host machine
+ansadmin  ALL=(ALL)       NOPASSWD: ALL          ## add this line in file and exit
+service sshd reload
+
+vim /etc/ansible/hosts
+[webserver]                           # any name or alias             
+172.32.49.14               # private ip of hosts
+[appserver]
+172.32.13.171
+[dbserver]
+172.32.14.89
+
+save & exit
+
+in host machine
+useradd -m -d /home/ansadmin ansadmin      ## adding user with home directory
+passwd ansadmin
+
+vim   /etc/ssh/sshd_config                ### in host machine
+PasswordAuthentication yes             ##change from no to yes
+
+
+vim /etc/ansible/hosts
+ansible -m ping all
+ansible -m ping production
+
+ansible <HOST_GROUP> -m ping
+ansible <HOST_GROUP> -m setup | less
+ansible <HOST_GROUP> -m setup -a "filter=ansible_distribution*"
+
+ansible all -a "/bin/echo hello"   Now run a live command on all of your nodes:
+
+/etc/ansible/ansible.cfg                      ######## Config file, used if present
+
+ansible all --list-hosts
+
+
+----28 june 2020----
+  
+ansible 10 ad-hoc commands    : 
+ping 
+command
+stat
+yum
+user
+setup
+
+         ansible all -m command -a "ip addr"
+         ansible all -m command -a "hostname -I"
+         ansible all -m command -a "uptime"
+         ansible all -m command -a "date"
+        ansible all -m command -a "who"
+        ansible all -m stat -a "path=/etc/hosts"
+        ansible all -m yum -a "name=git"
+        ansible amazon -m yum -a "name=git"
+        ansible rhel -m yum -a "name=git"
+   76  ansible all -m yum -a "name=git" -b              #### -b means becoming root 
+   76  ansible all -m user -a "name=john"                ### add user
+ 
+
+ansible all -m setup 
+ansible all -m ping -i host         ansible all -m command -a "uptime"s
+ansible rhel -m ping
+
+notes on playbook
+Playbook:-It is a text book written in YAML :Yaml Ain't Markup Language in .yml format
+It begins with a line consisting of 3 dashes (- - -)   
+An item in Yaml list starts with a single dash followed by a space.
+Hosts and tasks are mandatory items in a playbook.
+Playbook primarily uses indentation with space characters to indicate the structure of its data.
+Modules are used to perform tasks
+comment starts with #
+ansible all -m user -a "name=john" -b
+
+1.write ansible playbook to create a user vaibhav
+vim create_user.yml
+---
+- hosts: all
+  become: true
+  tasks:
+  - user: name=vaibhav
+------------------------------------------------------------
+ansible-playbook create_user.yml
+
+2. git install yum playbook
+---
+- name: this playbook install packages
+  hosts: webservers
+  become: true
+  tasks:
+  - name: install package
+    yum:
+      name: git
+      state: installed  
+----------------------------------------------------------
+
+ ansible webservers -m command -a "rpm -qa | grep git"
+
+3 create a directory
+
+---
+- name: create directory
+  hosts: all
+  become: true
+  tasks:
+  - name: creating a file
+    file:
+      path: /home/ansible
+      state: directory
+
+
+4 create a file
+---
+- name: create a fileor directory
+  hosts: all
+  become: true
+  tasks:
+  - name: creating a file
+    file:
+      path: /home/ansible/ram.txt
+      state: touch
+
+5 copy a file
+---
+- hosts: dbservers
+  tasks:
+    - name: copy file to remote host
+      copy:
+        src: /root/ansible/user.yml
+        dest: /home/ansible/test
+------------------------------------------------------------------
+5.1 to copy a file with user level permission
+---
+- name: to copya file
+  hosts: all
+  become: true
+  tasks:
+    - name: copy file to remote host
+      copy:
+        src: /root/ansible/user.yml
+        dest: /home/ansible/test
+        mode: 0600
+        owner: vaibhav
+
+
+
+ansible-playbook copy_file.yml --check                 #### playbook checking
+ansible-playbook copy_file.yml --syntax-check      #### syntax checking
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
