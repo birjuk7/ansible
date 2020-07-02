@@ -1,0 +1,45 @@
+
+https://www.redhat.com/en/blog/system-administrators-guide-getting-started-ansible-fast?extIdCarryOver=true&sc_cid=701f2000001OH7YAAW
+
+vim /etc/ansible/hosts
+ansible -m ping all
+ansible -m ping production
+
+ansible <HOST_GROUP> -m ping
+ansible <HOST_GROUP> -m setup | less
+ansible <HOST_GROUP> -m setup -a "filter=ansible_distribution*"
+
+ansible all -a "/bin/echo hello"   Now run a live command on all of your nodes:
+
+/etc/ansible/ansible.cfg                      ######## Config file, used if present
+
+ansible all --list-hosts
+
+
+----28 june 2020----
+  
+ansible 10 ad-hoc commands    : 
+ping 
+command
+stat
+yum
+user
+setup
+
+         ansible all -m command -a "ip addr"
+   70  ansible all -m command -a "hostname -I"
+   71  ansible all -m command -a "uptime"
+   72  ansible all -m command -a "date"
+   73  ansible all -m command -a "who"
+   74  ansible all -m stat -a "path=/etc/hosts"
+   76  ansible all -m yum -a "name=git"
+        ansible amazon -m yum -a "name=git"
+        ansible rhel -m yum -a "name=git"
+   76  ansible all -m yum -a "name=git" -b              #### -b means becoming root 
+   76  ansible all -m user -a "name=john"                ### add user
+ 
+
+ansible all -m setup 
+ansible all -m ping -i hosts
+ansible rhel -m ping
+
