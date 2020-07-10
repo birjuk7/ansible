@@ -1,0 +1,15 @@
+ansible vault:-It is a feature of ansible that allows you to keep sensitive data such as passwords or keys in encrypted files, rather than as plaintext in playbooks or roles.
+
+create:to create ansible vault file in the encrypted format
+view: to view data of encrypted file.
+edit: to edit encrypted file
+encrypt: to encrypted an unencrypted file
+decrypted: to decrypt an encrypted file
+--ask-vault-pass: to provide password while running playbook
+--vault-password-file: to pass a vault password through a file
+
+ansible-vault create vault-pass.yml     # encrypt any file
+ansible-vault view vault-pass.yml       # view encrypted file         
+ansible-vault edit vault-pass.yml       # edit encrypted file
+ansible-vault decrypt vault-pass.yml    # decrypt encrypted file
+ansible-vault encrypt file_name.yml     # to enryptd any file
